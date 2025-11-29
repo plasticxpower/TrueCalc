@@ -72,7 +72,7 @@ export default function ComparisonChart({ schedule, currency }: ComparisonChartP
                 align: 'end' as const,
                 labels: {
                     color: '#6c757d',
-                    font: { family: 'Inter', size: 11, weight: '500' },
+                    font: { family: 'Inter', size: 11, weight: 500 },
                     usePointStyle: true,
                     boxWidth: 6,
                     padding: 12,
@@ -89,7 +89,7 @@ export default function ComparisonChart({ schedule, currency }: ComparisonChartP
                 padding: 10,
                 displayColors: true,
                 callbacks: {
-                    label: function (context: any) {
+                    label: function (context: { dataset: { label?: string }, parsed: { y: number | null } }) {
                         let label = context.dataset.label || '';
                         if (label) { label += ': '; }
                         if (context.parsed.y !== null) {
@@ -118,8 +118,9 @@ export default function ComparisonChart({ schedule, currency }: ComparisonChartP
                 ticks: {
                     color: '#adb5bd',
                     font: { size: 10, family: 'Inter' },
-                    callback: function (value: any) {
-                        return symbol + (value / 1000).toFixed(0) + 'k';
+                    callback: function (value: string | number) {
+                        const numValue = typeof value === 'string' ? parseFloat(value) : value;
+                        return symbol + (numValue / 1000).toFixed(0) + 'k';
                     }
                 }
             }

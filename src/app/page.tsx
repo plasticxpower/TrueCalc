@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { calculateMortgage } from '@/utils/calculations';
 import {
   Chart as ChartJS,
@@ -398,7 +398,7 @@ export default function Home() {
                       borderColor: '#ddd',
                       borderWidth: 1,
                       callbacks: {
-                        label: function (context: any) {
+                        label: function (context: { dataset: { label?: string }, parsed: { y: number | null } }) {
                           let label = context.dataset.label || '';
                           if (label) { label += ': '; }
                           if (context.parsed.y !== null) {
@@ -422,8 +422,9 @@ export default function Home() {
                       ticks: {
                         color: '#999',
                         font: { size: 11 },
-                        callback: function (value: any) {
-                          return symbol + (value / 1000).toFixed(0) + 'k';
+                        callback: function (value: string | number) {
+                          const numValue = typeof value === 'string' ? parseFloat(value) : value;
+                          return symbol + (numValue / 1000).toFixed(0) + 'k';
                         }
                       }
                     },
