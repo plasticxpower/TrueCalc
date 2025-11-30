@@ -174,7 +174,7 @@ export default function Home() {
                 </div>
                 <div>
                   <label style={{ fontSize: '12px', display: 'block', marginBottom: '4px' }}>Term (Years)</label>
-                  <input type="number" value={years} onChange={(e) => setYears(Number(e.target.value))} onFocus={(e) => e.target.select()} style={{ padding: '8px', width: '100%' }} />
+                  <input type="number" min="1" value={years} onChange={(e) => setYears(Number(e.target.value))} onFocus={(e) => e.target.select()} style={{ padding: '8px', width: '100%' }} />
                 </div>
               </div>
             </div>

@@ -54,6 +54,31 @@ export const calculateMortgage = (
   continueInvestingAfterPayoff: boolean = false,
   postPayoffAmount: number = 0
 ): MortgageResult => {
+  if (years <= 0) {
+    return {
+      monthlyPayment: 0,
+      totalInterest: 0,
+      totalPaid: 0,
+      payoffMonths: 0,
+      schedule: [],
+      investmentComparison: {
+        totalInvested: 0,
+        investmentValue: 0,
+        interestSaved: 0,
+        paydownSavings: 0,
+        paydownSavingsGrowth: 0,
+        netWorthA: 0,
+        netWorthB: 0,
+        netWorthAReal: 0,
+        netWorthBReal: 0,
+        paydownSavingsGrowthReal: 0,
+        totalInterestReal: 0,
+        baselineCumulativeInterestReal: 0,
+        investmentYieldReal: 0
+      }
+    };
+  }
+
   const monthlyRate = annualRate / 100 / 12;
   const totalMonths = years * 12;
   const monthlyPayment = monthlyRate > 0
