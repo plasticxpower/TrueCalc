@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { calculateMortgage } from '@/utils/calculations';
 import {
   Chart as ChartJS,
@@ -606,9 +607,11 @@ export default function Home() {
         fontSize: '12px',
         color: '#666'
       }}>
-        <img
+        <Image
           src="/blacktree-logo.png"
           alt="Blacktree Studio"
+          width={180}
+          height={60}
           style={{
             width: '180px',
             height: 'auto',
