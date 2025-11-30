@@ -608,7 +608,7 @@ export default function Home() {
         color: '#666'
       }}>
         <Image
-          src="/blacktree-logo.png"
+          src="/TrueCalc/blacktree-logo.png"
           alt="Blacktree Studio"
           width={180}
           height={60}
