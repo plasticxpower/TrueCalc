@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Image from 'next/image';
+import { useDebounce } from '@/hooks/useDebounce';
 import { calculateMortgage } from '@/utils/calculations';
 import {
   Chart as ChartJS,
@@ -75,14 +76,8 @@ export default function Home() {
     setVisibleColumns(prev => ({ ...prev, [column]: !prev[column] }));
   };
 
-  // Calculate monthly payment for post-payoff investment
-  const monthlyRate = rate / 100 / 12;
-  const totalMonths = years * 12;
-  const monthlyPayment = monthlyRate > 0
-    ? (principal * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1)
-    : principal / totalMonths;
-
-  const result = calculateMortgage(
+  // Group inputs for debouncing
+  const calculationInputs = {
     principal,
     rate,
     years,
@@ -91,9 +86,33 @@ export default function Home() {
     inflationRate,
     oneTimePaymentAmount,
     oneTimePaymentMonth,
+    continueInvestingAfterPayoff,
+    postPayoffInvestmentAmount
+  };
+
+  const debouncedInputs = useDebounce(calculationInputs, 300);
+
+  // Calculate monthly payment for post-payoff investment (memoized)
+  const monthlyPayment = useMemo(() => {
+    const monthlyRate = debouncedInputs.rate / 100 / 12;
+    const totalMonths = debouncedInputs.years * 12;
+    return monthlyRate > 0
+      ? (debouncedInputs.principal * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1)
+      : debouncedInputs.principal / totalMonths;
+  }, [debouncedInputs.rate, debouncedInputs.years, debouncedInputs.principal]);
+
+  const result = useMemo(() => calculateMortgage(
+    debouncedInputs.principal,
+    debouncedInputs.rate,
+    debouncedInputs.years,
+    debouncedInputs.extraPayment,
+    debouncedInputs.investmentRate,
+    debouncedInputs.inflationRate,
+    debouncedInputs.oneTimePaymentAmount,
+    debouncedInputs.oneTimePaymentMonth,
     true,
-    continueInvestingAfterPayoff ? monthlyPayment : postPayoffInvestmentAmount
-  );
+    debouncedInputs.continueInvestingAfterPayoff ? monthlyPayment : debouncedInputs.postPayoffInvestmentAmount
+  ), [debouncedInputs, monthlyPayment]);
   const symbol = CURRENCIES[currency];
 
   const formatCurrency = (val: number) =>
@@ -221,7 +240,7 @@ export default function Home() {
                 )}
                 {continueInvestingAfterPayoff && (
                   <div style={{ fontSize: '12px', color: '#666', marginLeft: '24px' }}>
-                    Will invest {formatCurrency(result.monthlyPayment)}/mo + extra payments
+                    Will invest {formatCurrency(monthlyPayment)}/mo + extra payments
                   </div>
                 )}
               </div>
